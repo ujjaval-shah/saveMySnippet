@@ -25,4 +25,7 @@ urlpatterns = [
     path('api/tag/create', create_tag),
     path('api/tag/update', update_tag),
     path('api/snip/<int:id>', get_snip),
+    path('api/snip/create', create_snip),
+    path('api/snip/<int:id>/delete', delete_snip),
+    path('api/snip/update', update_snip),
 ]

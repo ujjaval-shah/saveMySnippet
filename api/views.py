@@ -5,9 +5,12 @@ from api.serializers import *
 
 @api_view(['GET'])
 def get_tag(request, id):
-    tag = Tag.objects.get(pk=id)
-    serializer = TagSerializer(tag)
-    return Response(serializer.data)
+    try:
+        tag = Tag.objects.get(pk=id)
+        serializer = TagSerializer(tag)
+        return Response(serializer.data)
+    except:
+        return Response({"error": "tag does not exist."})
 
 @api_view(['GET'])
 def get_tags(request):
@@ -36,7 +39,7 @@ def update_tag(request):
 @api_view(['DELETE'])
 def delete_tag(request, id):
     try:
-        tag = Tag.objects.get (pk = id)
+        tag = Tag.objects.get(pk = id)
         # print(tag)
         tag.delete()
         return Response({"message": "object deleted successfully."})
@@ -45,6 +48,37 @@ def delete_tag(request, id):
 
 @api_view(['GET'])
 def get_snip(request, id):
-    snip = Snip.objects.get(pk=id)
-    serializer = SnipSerializer(snip)
-    return Response(serializer.data)
+    try:
+        snip = Snip.objects.get(pk=id)
+        serializer = SnipSerializer(snip)
+        return Response(serializer.data)
+    except:
+        return Response({"error": "snip does not exist."})    
+
+@api_view(['POST'])
+def create_snip(request):
+    snip_serializer = SnipSerializer(data= request.data)
+    if snip_serializer.is_valid():
+        return Response(snip_serializer.create(snip_serializer.validated_data))
+    else:
+        print(snip_serializer.errors)
+        return Response({"error": True, "message": "data not in valid format."})
+
+@api_view(['PUT'])
+def update_snip(request):
+    snip_serializer = SnipSerializer(data= request.data)
+    if snip_serializer.is_valid():
+        return Response(snip_serializer.update(snip_serializer.validated_data))
+    else:
+        print(snip_serializer.errors)
+        return Response({"error": True, "message": "data not in valid format."})
+
+@api_view(['DELETE'])
+def delete_snip(request, id):
+    try:
+        snip = Snip.objects.get(pk = id)
+        # print(tag)
+        snip.delete()
+        return Response({"message": "object deleted successfully."})
+    except:
+        return Response({"error": "snip does not exist."})
