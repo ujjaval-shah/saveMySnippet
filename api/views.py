@@ -53,7 +53,13 @@ def get_snip(request, id):
         serializer = SnipSerializer(snip)
         return Response(serializer.data)
     except:
-        return Response({"error": "snip does not exist."})    
+        return Response({"error": "snip does not exist."})
+
+@api_view(['GET'])
+def get_snips(request):
+    snips = Snip.objects.all()
+    serializer = SnipsSerializer({"snips":snips})
+    return Response(serializer.data)    
 
 @api_view(['POST'])
 def create_snip(request):

@@ -85,3 +85,6 @@ class SnipSerializer(serializers.ModelSerializer):
                 # print(f"{tag} is to be add()ed.")
                 snip.tags.add(tag)
         return SnipSerializer(snip).data
+
+class SnipsSerializer(serializers.Serializer):
+    snips = SnipSerializer(many = True)
