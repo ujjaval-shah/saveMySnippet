@@ -2,6 +2,13 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.response import Response
 from snips.models import *
 from api.serializers import *
+from rest_framework import status
+
+@api_view(['GET'])
+def get_languages(request):
+    languages = Language.objects.all()
+    serializer = LanguagesSerializer({"languages":languages})
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def get_tag(request, id):
@@ -10,7 +17,7 @@ def get_tag(request, id):
         serializer = TagSerializer(tag)
         return Response(serializer.data)
     except:
-        return Response({"error": "tag does not exist."})
+        return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_tags(request):
@@ -44,26 +51,36 @@ def delete_tag(request, id):
         tag.delete()
         return Response({"message": "object deleted successfully."})
     except:
-        return Response({"error": "tag does not exist."})
+        return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_snip(request, id):
     try:
         snip = Snip.objects.get(pk=id)
-        serializer = SnipSerializer(snip)
+        serializer = ShallowSnipSerializer(snip)
         return Response(serializer.data)
     except:
-        return Response({"error": "snip does not exist."})
+        return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_snips(request):
     snips = Snip.objects.all()
-    serializer = SnipsSerializer({"snips":snips})
+    serializer = ShallowSnipsSerializer({"snips":snips})
     return Response(serializer.data)    
+
+@api_view(['GET'])
+def get_snips_by_tag(request, id):
+    try:
+        tag = Tag.objects.get(pk=id)
+        snips = tag.snip_set.all()
+        serializer = ShallowSnipsSerializer({"snips":snips})
+        return Response(serializer.data)
+    except:
+        return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def create_snip(request):
-    snip_serializer = SnipSerializer(data= request.data)
+    snip_serializer = ShallowSnipSerializer(data= request.data)
     if snip_serializer.is_valid():
         return Response(snip_serializer.create(snip_serializer.validated_data))
     else:
@@ -72,7 +89,7 @@ def create_snip(request):
 
 @api_view(['PUT'])
 def update_snip(request):
-    snip_serializer = SnipSerializer(data= request.data)
+    snip_serializer = ShallowSnipSerializer(data= request.data)
     if snip_serializer.is_valid():
         return Response(snip_serializer.update(snip_serializer.validated_data))
     else:
@@ -87,4 +104,4 @@ def delete_snip(request, id):
         snip.delete()
         return Response({"message": "object deleted successfully."})
     except:
-        return Response({"error": "snip does not exist."})
+        return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
