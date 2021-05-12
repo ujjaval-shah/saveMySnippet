@@ -105,41 +105,18 @@ class ShallowSnipSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # print(validated_data)
         tags = validated_data.pop("tags")
-        language = validated_data.pop("language")
         snip = Snip(**validated_data)
-        # languageObj, created = Language.objects.get_or_create(**language)
-        snip.language = Language.objects.get(pk=language)
         snip.save()
-        for tag in tags:
-            # tagObj, created = Tag.objects.get_or_create(**tag)
-            # print(tagObj)
-            snip.tags.add(Tag.objects.get(pk=tag))        
+        snip.tags.set(tags)
         return ShallowSnipSerializer(snip).data
 
     def update(self, validated_data):
+        # print(validated_data)
         id = validated_data.pop("id")
         tags = validated_data.pop("tags")
-        language = validated_data.pop("language")
+        Snip.objects.filter(id=id).update(**validated_data)
         snip = Snip.objects.get(pk = id)
-        snip.title = validated_data['title']
-        snip.description = validated_data['description']
-        snip.snippet = validated_data['snippet']
-        snip.pinned = validated_data['pinned']
-        # languageObj, created = Language.objects.get_or_create(**language)
-        snip.language = Language.objects.get(pk=language)
-        snip.save()
-        tagObjList = []
-        for tag in tags:
-            # tagObj, created = Tag.objects.get_or_create(**tag)
-            tagObjList.append(Tag.objects.get(pk=tag))
-        for tag_ in snip.tags.all():
-            if tag_ not in tagObjList:
-                # print(f"{tag_} is to be remove()ed.")
-                snip.tags.remove(tag_)
-        for tag in tagObjList:
-            if tag not in snip.tags.all():
-                # print(f"{tag} is to be add()ed.")
-                snip.tags.add(tag)
+        snip.tags.set(tags)
         return ShallowSnipSerializer(snip).data
 
 class ShallowSnipsSerializer(serializers.Serializer):
