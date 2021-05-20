@@ -105,3 +105,23 @@ def delete_snip(request, id):
         return Response({"message": "object deleted successfully."})
     except:
         return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def pin_snip(request, id):
+    try:
+        snip = Snip.objects.get(pk=id)
+        snip.pinned = True
+        snip.save()
+        return Response({"message": "Action Successful."})
+    except:
+        return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def unpin_snip(request, id):
+    try:
+        snip = Snip.objects.get(pk=id)
+        snip.pinned = False
+        snip.save()
+        return Response({"message": "Action Successful."})
+    except:
+        return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)

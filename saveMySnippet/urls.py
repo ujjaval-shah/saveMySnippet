@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/snip/all/', get_snips),
     path('api/snip/create/', create_snip),
     path('api/snip/<int:id>/delete/', delete_snip),
+    path('api/snip/<int:id>/pin/', pin_snip),
+    path('api/snip/<int:id>/unpin/', unpin_snip),
     path('api/snip/update/', update_snip),
     path('api/snip/all/whose_tag/<int:id>/', get_snips_by_tag),
 ]

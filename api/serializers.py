@@ -117,6 +117,7 @@ class ShallowSnipSerializer(serializers.ModelSerializer):
         Snip.objects.filter(id=id).update(**validated_data)
         snip = Snip.objects.get(pk = id)
         snip.tags.set(tags)
+        snip.save()
         return ShallowSnipSerializer(snip).data
 
 class ShallowSnipsSerializer(serializers.Serializer):
