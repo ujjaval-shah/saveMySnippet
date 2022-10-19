@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from snips.models import *
 from api.serializers import *
 from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(['GET'])
 def get_languages(request):
@@ -10,13 +11,25 @@ def get_languages(request):
     serializer = LanguagesSerializer({"languages":languages})
     return Response(serializer.data)
 
+@api_view(['POST'])
+def create_languages(request):
+    languages_serializer = LanguagesSerializer(data=request.data)
+    if languages_serializer.is_valid():
+        totalCreated = 0
+        for langDict in languages_serializer.data['languages']:
+            langObj, created = Language.objects.get_or_create(**langDict)
+            totalCreated += int(created)
+        return Response({"message": f"{totalCreated} new languages added."}, status= status.HTTP_201_CREATED)
+    else:
+        return Response({"error": True, "message": "data not in valid format."}, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['GET'])
 def get_tag(request, id):
     try:
         tag = Tag.objects.get(pk=id)
         serializer = TagSerializer(tag)
         return Response(serializer.data)
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
@@ -32,7 +45,7 @@ def create_tag(request):
         return Response(tag_serializer.create(tag_serializer.validated_data))
     else:
         print(tag_serializer.errors)
-        return Response({"error": True, "message": "data not in valid format."})
+        return Response({"error": True, "message": "data not in valid format."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 def update_tag(request):
@@ -50,7 +63,7 @@ def delete_tag(request, id):
         # print(tag)
         tag.delete()
         return Response({"message": "object deleted successfully."})
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
@@ -59,7 +72,7 @@ def get_snip(request, id):
         snip = Snip.objects.get(pk=id)
         serializer = ShallowSnipSerializer(snip)
         return Response(serializer.data)
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
@@ -75,7 +88,7 @@ def get_snips_by_tag(request, id):
         snips = tag.snip_set.all()
         serializer = ShallowSnipsSerializer({"snips":snips})
         return Response(serializer.data)
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "tag does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -103,7 +116,7 @@ def delete_snip(request, id):
         # print(tag)
         snip.delete()
         return Response({"message": "object deleted successfully."})
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
@@ -113,7 +126,7 @@ def pin_snip(request, id):
         snip.pinned = True
         snip.save()
         return Response({"message": "Action Successful."})
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
@@ -123,5 +136,5 @@ def unpin_snip(request, id):
         snip.pinned = False
         snip.save()
         return Response({"message": "Action Successful."})
-    except:
+    except ObjectDoesNotExist:
         return Response({"error": "snip does not exist."}, status=status.HTTP_400_BAD_REQUEST)

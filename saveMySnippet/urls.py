@@ -20,6 +20,7 @@ from api.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/language/all/', get_languages),
+    path('api/language/create/all/', create_languages),
     path('api/tag/<int:id>/', get_tag),
     path('api/tag/<int:id>/delete/', delete_tag),
     path('api/tag/all/', get_tags),
