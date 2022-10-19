@@ -16,7 +16,7 @@ class Tag(models.Model):
 class Snip(models.Model):
     title = models.CharField(max_length=300, unique=True)
     snippet = models.TextField()
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     pinned = models.BooleanField(default=False)
     language = models.ForeignKey(Language, null=True, on_delete=models.SET_NULL)
     description = models.CharField(max_length=600, null=True, blank=True)
