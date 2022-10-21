@@ -1,4 +1,4 @@
-# SaveMySnippet Web App (Front-end)
+# SaveMySnippet Web App (Back-end)
 
 A web app to save and manage daily use code snippets. Snippets can be organized into folders. It contains Sort and Filter functionality to access Snippets.
 
